@@ -11,22 +11,26 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using Persistence;
+using Microsoft.EntityFrameworkCore;
 
 namespace API
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration config)
         {
-            Configuration = configuration;
+            _Config = config;
         }
 
-        public IConfiguration Configuration { get; }
+        private readonly IConfiguration _Config;
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
+            services.AddDbContext<DataContext>(opt =>{
+                opt.UseSqlite(_Config.GetConnectionString("DefaultConnection"));
+            });
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
